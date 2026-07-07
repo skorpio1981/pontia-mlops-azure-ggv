@@ -44,7 +44,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: ### 🧪 Test Results with Coverage\n\n\``\n${truncated}\n````
+              body: ### 🧪 Test Results with Coverage\n\n\`\`\`\n${truncated}\n`\`\`\
             });            
 
       - name: Fallo en caso de error en los tests
