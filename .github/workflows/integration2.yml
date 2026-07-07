@@ -5,20 +5,21 @@ on:
   workflow_dispatch:
 
 jobs:
-  integration:  
+  integrate:
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
       pull-requests: write
-    steps:
 
+    steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: 3.10
 
       - name: Install dependencies
         run: |
@@ -28,13 +29,13 @@ jobs:
       - name: Run unit tests
         id: test
         run: |
-          mkdir -p test_reports
+          mkdir -p test-results
           PYTHONPATH=src pytest unit_tests/ --capture=tee-sys --cov=model --cov=evaluate --cov=data_loader --cov-report=term --cov-report=html --junitxml=test-results/results.xml > test-results/results.log
         continue-on-error: true
-
+        
       - name: Comentar resultados en PR
-        uses: actions/github-script@v6
-        with: 
+        uses: actions/github-script@v7
+        with:
           script: |
             const fs = require('fs');
             const results = fs.readFileSync('test-results/results.log', 'utf8');
@@ -44,8 +45,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: ### 🧪 Test Results with Coverage\n\n\``\n${truncated}\n````
-            });            
+            });
 
-      - name: Fallo en caso de error en los tests
+      - name: Fallo en caso de no pasar unit tests
         if: steps.test.outcome == 'failure'
         run: exit 1
